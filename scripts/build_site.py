@@ -251,7 +251,7 @@ def prevnext(i):
 
 
 TPL = """<!doctype html>
-<html lang="ja" data-theme="auto">
+<html lang="ja" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
