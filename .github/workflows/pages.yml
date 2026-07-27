@@ -1,0 +1,59 @@
+name: サイトを GitHub Pages へ配信
+
+# docs/ の原稿を直して push すれば、サイトが作り直されて公開される。
+# ビルドは Python の標準ライブラリだけで動くので、依存のインストールは不要。
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - "reference/feudum-glossary-ja.md"
+      - "figures/*.jpg"
+      - "figures/*.png"
+      - "scripts/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: サイトを生成
+        run: python3 scripts/build_site.py
+
+      - name: 生成結果を確認
+        run: |
+          test -f dist/site/index.html
+          echo "ページ: $(find dist/site -name '*.html' | wc -l) 枚 / 図版: $(find dist/site/figures -type f | wc -l) 点"
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4
