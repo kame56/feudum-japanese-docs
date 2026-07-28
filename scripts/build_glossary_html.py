@@ -14,6 +14,7 @@ import mdbook
 mdbook.WEB_ONLY = False        # A4版では ::: web-only ブロックを出力しない
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+mdbook.IMAGE_ROOT = ROOT       # ![...](figures/...) を base64 で埋め込むための基準
 FONT_SCALE = 0.75
 
 SRC = os.path.join(ROOT, "reference", "feudum-glossary-ja.md")

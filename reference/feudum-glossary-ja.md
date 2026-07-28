@@ -594,11 +594,11 @@ Outpost     wood      Farm     iron     Town   king's seal    Feudum
 
 | 記号 | English | 日本語の意味 |
 | --- | --- | --- |
-| **(x2)** | (x2) | 反復アクションでこのラウンドに再度プレイできる |
-| 再演不可の記号 | no-repeat symbol | 反復アクションを使っても、このラウンドに再度プレイ**できない** |
-| 最後不可の記号 | not-last symbol | このラウンドで**最後に**公開するカードにはできない |
-| いずれか一方の記号 | either/or symbol | 通常アクション**または**特殊能力のいずれかを行う。**両方は不可** |
-| vp の記号 | vp symbol | このアクションは崇敬点を得る |
+| ![×2](figures/sym-repeat.png) ×2 | (x2) | 反復アクションでこのラウンドに再度プレイできる |
+| ![再演不可の記号](figures/sym-no-repeat.png) 再演不可の記号 | no-repeat symbol | 反復アクションを使っても、このラウンドに再度プレイ**できない** |
+| ![最後不可の記号](figures/sym-not-last.png) 最後不可の記号 | not-last symbol | このラウンドで**最後に**公開するカードにはできない |
+| ![いずれか一方の記号](figures/sym-either-or.png) いずれか一方の記号 | either/or symbol | 通常アクション**または**特殊能力のいずれかを行う。**両方は不可** |
+| vp の記号（**図柄は未確認**） | vp symbol | このアクションは崇敬点を得る |
 
 ---
 
