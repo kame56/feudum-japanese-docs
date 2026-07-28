@@ -26,6 +26,8 @@
 }
 
 *{box-sizing:border-box}
+/* 画像はどこにあっても親の幅を超えない（個別指定の漏れで版面が崩れないように） */
+img,svg,video{max-width:100%;height:auto}
 html{scroll-padding-top:calc(var(--top-h) + 12px)}
 body{
   margin:0;background:var(--bg);color:var(--ink);

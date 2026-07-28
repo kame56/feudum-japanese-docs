@@ -14,7 +14,7 @@ A4印刷版（build_rulebook_html.py / build_glossary_html.py）とは独立し�
     dist/site/assets/site.js      検索とサイドバー開閉
     dist/site/assets/search.js    全文検索インデックス（file:// でも読めるようJS形式）
 """
-import os, re, sys, json, shutil, html
+import os, re, sys, json, shutil, html, hashlib
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import mdbook
 
@@ -196,12 +196,12 @@ for pg in pages:
 
 # ---------------- ナビゲーション ----------------
 # サイドバー用のアイコン（外部ファイルに依存しないよう SVG を直接埋め込む）
-ICON_DOC = ('<svg class="doc-ic" viewBox="0 0 16 16" aria-hidden="true">'
+ICON_DOC = ('<svg class="doc-ic" viewBox="0 0 16 16" width="15" height="15" aria-hidden="true">'
             '<path d="M3.6 1.6h5.6l3.2 3.2v9.6H3.6z" fill="none" stroke="currentColor" stroke-width="1.2"/>'
             '<path d="M9.2 1.6v3.2h3.2" fill="none" stroke="currentColor" stroke-width="1.2"/>'
             '<path d="M5.8 7.6h4.4M5.8 9.8h4.4M5.8 12h2.8" fill="none" stroke="currentColor" stroke-width="1.2"/>'
             '</svg>')
-ICON_CARET = ('<svg viewBox="0 0 10 10" aria-hidden="true">'
+ICON_CARET = ('<svg viewBox="0 0 10 10" width="10" height="10" aria-hidden="true">'
               '<path d="M3.2 1.6 6.8 5 3.2 8.4" fill="none" stroke="currentColor" '
               'stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>')
 
@@ -256,7 +256,7 @@ TPL = """<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{title}</title>
-<link rel="stylesheet" href="assets/site.css">
+<link rel="stylesheet" href="assets/site.css?v={ver}">
 </head>
 <body>
 <header class="top">
@@ -275,7 +275,7 @@ TPL = """<!doctype html>
   {prevnext}
 </main>
 {ptoc}
-<script src="assets/site.js"></script>
+<script src="assets/site.js?v={ver}"></script>
 </body>
 </html>
 """
@@ -284,7 +284,7 @@ TPL = """<!doctype html>
 def render(pg, i):
     crumb = '<a href="%s">%s</a>' % ([p for p in pages if p["doc"] == pg["doc"]][0]["url"],
                                      html.escape(pg["doc_title"]))
-    return TPL.format(title=html.escape("%s | %s" % (pg["title"], SITE_TITLE)),
+    return TPL.format(ver=VER, title=html.escape("%s | %s" % (pg["title"], SITE_TITLE)),
                       site=html.escape(SITE_TITLE),
                       side=sidebar(pg["url"]), crumb=crumb,
                       h1=html.escape(pg["title"]), body=pg["html"],
@@ -304,7 +304,7 @@ def index_page():
                html.escape(d["lead"]), len(ps[0]["anchors"])))
     body = """
 <div class="hero">
-<img class="hero-cover" src="figures/fig-cover.jpg"
+<img class="hero-cover" src="figures/cover.jpg" width="186" height="263"
      alt="Feudum 原書ルールブックの表紙。赤毛の女王の肖像と、金の装飾に囲まれたタイトル">
 <div class="hero-text">
 <p class="lead">ボードゲーム <strong>Feudum</strong>（フューダム）の日本語ドキュメントです。
@@ -322,7 +322,7 @@ def index_page():
 <li>点線の枠は<strong>画像の配置予定地</strong>です。画像を用意すると差し替わります。</li>
 </ul>
 """ % "".join(cards)
-    return TPL.format(title=html.escape(SITE_TITLE), site=html.escape(SITE_TITLE),
+    return TPL.format(ver=VER, title=html.escape(SITE_TITLE), site=html.escape(SITE_TITLE),
                       side=sidebar("index.html"), crumb="", h1=html.escape(SITE_TITLE),
                       body=body, prevnext="", ptoc="")
 
@@ -387,6 +387,10 @@ def main():
 
 CSS = open(os.path.join(ROOT, "scripts", "site_assets", "site.css"), encoding="utf-8").read()
 JS = open(os.path.join(ROOT, "scripts", "site_assets", "site.js"), encoding="utf-8").read()
+
+# CSS と JS の内容から作る短い版番号。URL に付けることで、
+# HTML だけ新しくなって古い CSS が使われる（＝レイアウトが崩れる）事故を防ぐ。
+VER = hashlib.md5((CSS + JS).encode("utf-8")).hexdigest()[:8]
 
 if __name__ == "__main__":
     main()
