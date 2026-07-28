@@ -388,6 +388,20 @@ tbody tr:hover td{background:color-mix(in srgb,var(--gold) 5%,transparent)}
 @media (max-width:1400px){.ptoc{display:none}}
 
 /* ---------- index ---------- */
+/* ---------- トップページの表紙 ---------- */
+.hero{display:flex;gap:26px;align-items:flex-start;margin:0 0 2em}
+.hero-cover{
+  flex:0 0 auto;width:186px;height:auto;border-radius:8px;
+  border:1px solid var(--line);box-shadow:0 3px 14px rgba(40,30,10,.18);
+}
+.hero-text{flex:1 1 auto;min-width:0}
+.hero .lead{margin-bottom:1em}
+.hero-meta{font-family:var(--sans);font-size:12.5px;line-height:1.9;color:var(--ink-3);margin:0}
+@media (max-width:640px){
+  .hero{flex-direction:column;align-items:center;text-align:left}
+  .hero-cover{width:150px}
+}
+
 .lead{font-size:17px;color:var(--ink-2);margin:0 0 1.6em}
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin:1.5em 0 2.5em}
 .card{

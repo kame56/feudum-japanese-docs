@@ -303,8 +303,16 @@ def index_page():
             % (ps[0]["url"], html.escape(d["title"]), html.escape(d["sub"]),
                html.escape(d["lead"]), len(ps[0]["anchors"])))
     body = """
-<p class="lead">ボードゲーム <strong>Feudum</strong>（Mark Swanson / Odd Bird Games, © 2017）の日本語ドキュメントです。
-目的に応じて4冊＋用語集に分かれています。</p>
+<div class="hero">
+<img class="hero-cover" src="figures/fig-cover.jpg"
+     alt="Feudum 原書ルールブックの表紙。赤毛の女王の肖像と、金の装飾に囲まれたタイトル">
+<div class="hero-text">
+<p class="lead">ボードゲーム <strong>Feudum</strong>（フューダム）の日本語ドキュメントです。
+英語版ルールブックを起点に、目的に応じて4冊＋用語集に分けました。</p>
+<p class="hero-meta">デザイン Mark Swanson ／ アートワーク Justin Schultz ／ Odd Bird Games, © 2017<br>
+個人利用を目的とした非公式の翻訳です。</p>
+</div>
+</div>
 <div class="cards">%s</div>
 
 <h2>注意</h2>
