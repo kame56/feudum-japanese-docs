@@ -286,6 +286,32 @@ tbody tr:hover td{background:color-mix(in srgb,var(--gold) 5%,transparent)}
 .blk-steps>.cell p{margin:0}
 .blk-steps>.cell p+p{margin-top:.3em;color:var(--ink-2)}
 
+/* ---------- components（::: comp）コンポーネント一覧 ---------- */
+.blk-comp{
+  display:grid;gap:10px;margin:1.2em 0 1.8em;
+  grid-template-columns:repeat(auto-fill,minmax(148px,1fr));
+}
+.blk-comp>.cell{
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  border:1px solid var(--line);border-radius:9px;background:var(--card);padding:12px 10px 11px;
+}
+.blk-comp>.cell .fig{
+  display:flex;align-items:center;justify-content:center;
+  width:100%;height:74px;margin:0 0 9px;
+}
+.blk-comp>.cell .fig img{
+  width:auto;max-width:100%;max-height:74px;
+  border:0;border-radius:0;background:none;box-shadow:none;
+}
+.blk-comp>.cell p{margin:0;font-family:var(--sans);font-size:13px;line-height:1.55}
+.blk-comp>.cell p strong{font-weight:600}
+.blk-comp>.cell p+p{margin-top:4px;font-size:11.5px;line-height:1.6;color:var(--ink-3)}
+@media (max-width:520px){
+  .blk-comp{grid-template-columns:repeat(auto-fill,minmax(116px,1fr));gap:8px}
+  .blk-comp>.cell .fig{height:58px}
+  .blk-comp>.cell .fig img{max-height:58px}
+}
+
 /* ---------- story cards（::: story）人物の肖像＋物語 ---------- */
 .blk-story{display:grid;gap:12px;margin:1.4em 0 1.8em}
 .blk-story>.cell{

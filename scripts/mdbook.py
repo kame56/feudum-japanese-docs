@@ -465,6 +465,23 @@ nav.toc a:hover{border-bottom:1px dotted #a99570}
 .blk-steps>.cell strong{display:block;font-family:"Hiragino Sans",sans-serif;font-size:1.02em}
 .blk-steps>.cell p{margin:0}
 
+/* ---- components（::: comp）コンポーネント一覧 ---- */
+.blk-comp{display:grid;gap:.45em;grid-template-columns:repeat(4,1fr);margin:.9em 0 1.3em}
+.blk-comp>.cell{
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  border:1px solid var(--line-soft);border-radius:4px;background:var(--parch);
+  padding:.5em .35em .45em;break-inside:avoid;page-break-inside:avoid;
+}
+.blk-comp>.cell .fig{
+  display:flex;align-items:center;justify-content:center;
+  width:100%;height:13mm;margin:0 0 .35em;
+}
+.blk-comp>.cell .fig img{
+  width:auto;max-width:100%;max-height:13mm;border:0;background:none;box-shadow:none;
+}
+.blk-comp>.cell p{margin:0;font-family:"Hiragino Sans",sans-serif;font-size:.78em;line-height:1.5}
+.blk-comp>.cell p+p{margin-top:.15em;font-size:.68em;color:var(--ink-soft);line-height:1.5}
+
 /* ---- story cards（::: story）人物の肖像＋物語 ---- */
 .blk-story{display:grid;gap:.7em;margin:1em 0 1.3em}
 .blk-story>.cell{
