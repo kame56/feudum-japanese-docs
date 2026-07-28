@@ -40,7 +40,9 @@ jobs:
       - name: 生成結果を確認
         run: |
           test -f dist/site/index.html
+          test -f dist/site/print/feudum-rulebook-ja.html
           echo "ページ: $(find dist/site -name '*.html' | wc -l) 枚 / 図版: $(find dist/site/figures -type f | wc -l) 点"
+          echo "A4版: $(du -h dist/site/print/feudum-rulebook-ja.html | cut -f1)"
 
       # enablement: true にしておくと、Pages が未設定のリポジトリでも自前で有効化する
       - uses: actions/configure-pages@v5

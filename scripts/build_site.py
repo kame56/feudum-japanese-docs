@@ -312,6 +312,9 @@ def index_page():
 英語版ルールブックを起点に、目的に応じて4冊＋用語集に分けました。</p>
 <p class="hero-meta">デザイン Mark Swanson ／ アートワーク Justin Schultz ／ Odd Bird Games, © 2017<br>
 個人利用を目的とした非公式の翻訳です。</p>
+<p class="dl"><a class="dl-btn" href="print/feudum-rulebook-ja.html">
+<span class="dl-t">日本語ルールブック A4印刷版</span>
+<span class="dl-s">HTML %s ／ ブラウザで開いて印刷、PDFとして保存できます</span></a></p>
 </div>
 </div>
 <div class="cards">%s</div>
@@ -322,7 +325,7 @@ def index_page():
 <li>実物のボードとカードで確認できていない箇所が3つあります。<strong>軍役トラックの印字値</strong>（プレイヤーディスクに隠れて読めない）、<strong>ギルドごとの拠点アイコンの対応</strong>、<strong>vp（崇敬点）の記号の図柄</strong>。該当箇所には注記があります。</li>
 <li>点線の枠は<strong>画像の配置予定地</strong>です。画像を用意すると差し替わります。</li>
 </ul>
-""" % "".join(cards)
+""" % (print_size("feudum-rulebook-ja.html"), "".join(cards))
     return TPL.format(ver=VER, title=html.escape(SITE_TITLE), site=html.escape(SITE_TITLE),
                       side=sidebar("index.html"), crumb="", h1=html.escape(SITE_TITLE),
                       body=body, prevnext="", ptoc="")
@@ -355,11 +358,34 @@ def build_index():
     return out
 
 
+# ---------------- A4印刷版 ----------------
+# トップページからダウンロードできるよう、印刷用HTMLを生成して site/print/ に置く。
+# mdbook のモジュール設定（画像の埋め込み・web-only の扱い）がサイト用と食い違うので、
+# 同じプロセスではなく別プロセスで走らせる。
+PRINT_DOCS = [("build_rulebook_html.py", "feudum-rulebook-ja.html")]
+
+
+def print_size(name):
+    p = os.path.join(ROOT, "dist", "site", "print", name)
+    return "%.1f MB" % (os.path.getsize(p) / 1024 / 1024) if os.path.exists(p) else ""
+
+
+def build_print():
+    import subprocess
+    dst = os.path.join(OUT, "print")
+    os.makedirs(dst, exist_ok=True)
+    for script, name in PRINT_DOCS:
+        subprocess.run([sys.executable, os.path.join(ROOT, "scripts", script)],
+                       check=True, capture_output=True)
+        shutil.copy2(os.path.join(ROOT, "dist", name), os.path.join(dst, name))
+
+
 # ---------------- 出力 ----------------
 def main():
     if os.path.isdir(OUT):
         shutil.rmtree(OUT)
     os.makedirs(os.path.join(OUT, "assets"))
+    build_print()
     for i, pg in enumerate(pages):
         open(os.path.join(OUT, pg["url"]), "w", encoding="utf-8").write(render(pg, i))
     open(os.path.join(OUT, "index.html"), "w", encoding="utf-8").write(index_page())
