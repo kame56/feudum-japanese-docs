@@ -11,6 +11,8 @@ import os, re, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import mdbook
 
+mdbook.WEB_ONLY = False        # A4版では ::: web-only ブロックを出力しない
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FONT_SCALE = 0.75
 

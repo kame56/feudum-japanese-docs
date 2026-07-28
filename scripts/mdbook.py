@@ -131,6 +131,12 @@ def convert(md, heading_shift=0, collect=None):
                         i += 1
                         break
                 buf.append(lines[i]); i += 1
+            # サイトだけに出す内容（A4版では丸ごと落とす）
+            if kind == "web-only":
+                if WEB_ONLY:
+                    out.append('<div class="web-only">%s</div>'
+                               % convert("\n".join(buf), heading_shift))
+                continue
             cells = re.split(r"^\+\+\+\s*$", "\n".join(buf), flags=re.M)
             if kind == "story":
                 # 先頭の figure を肖像として残し、見出しと本文は story-body でまとめる
@@ -576,6 +582,7 @@ nav.toc a:hover{border-bottom:1px dotted #a99570}
 # ---------------- 画像 ----------------
 IMAGE_ROOT = ""          # ビルダーが設定する（プロジェクトルート）
 IMAGE_EMBED = True       # True なら base64 で埋め込む
+WEB_ONLY = True          # False なら ::: web-only ブロックを出力しない（A4版用）
 _IMG_CACHE = {}
 
 _MIME = {".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png",

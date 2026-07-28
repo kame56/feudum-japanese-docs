@@ -218,7 +218,9 @@
 
 > 汝のカードを傷みから守るには、透明な**「スタンダード・ユーロ」サイズのスリーブ（59 × 92 mm）71枚**を使うとよい。
 
-![コンポーネント一覧（原書 p. 2）|wide](figures/fig-components.jpg)
+:::web-only
+英語版の一覧図: [原書 p.2「The Bits」](figures/fig-components.jpg)
+:::
 
 ---
 
