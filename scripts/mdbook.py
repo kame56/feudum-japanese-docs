@@ -18,6 +18,8 @@ def inline(s):
     s = re.sub(r"`([^`]+)`", lambda m: "<code>%s</code>" % m.group(1), s)
     s = re.sub(r":(食料|木材|鉄|硫黄|硝石):",
                lambda m: '<span class="goods goods-%s"></span>%s' % (GOODS[m.group(1)], m.group(1)), s)
+    # 行中の画像（表のセルに記号を並べる用途）。リンクより先に処理する。
+    s = re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", lambda m: _inline_img(m.group(1), m.group(2)), s)
     s = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r'<a href="\2">\1</a>', s)
     s = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", s)
     s = re.sub(r"(?<!\*)\*([^*\n]+)\*(?!\*)", r"<em>\1</em>", s)
@@ -471,6 +473,10 @@ nav.toc a:hover{border-bottom:1px dotted #a99570}
 .blk-steps>.cell strong{display:block;font-family:"Hiragino Sans",sans-serif;font-size:1.02em}
 .blk-steps>.cell p{margin:0}
 
+/* ---- 行中の小さな画像（表のセルの記号など） ---- */
+img.ic{height:16pt;width:auto;vertical-align:-.35em;border:0;background:none;box-shadow:none}
+td img.ic{height:18pt}
+
 /* ---- components（::: comp）コンポーネント一覧 ---- */
 .blk-comp{display:grid;gap:.45em;grid-template-columns:repeat(4,1fr);margin:.9em 0 1.3em}
 .blk-comp>.cell{
@@ -598,6 +604,15 @@ def _data_uri(path):
                 _MIME.get(ext, "application/octet-stream"),
                 base64.b64encode(f.read()).decode())
     return _IMG_CACHE[path]
+
+
+def _inline_img(alt, src):
+    """行中に置く小さな画像。文字と同じ高さに合わせて表示する。"""
+    path = os.path.join(IMAGE_ROOT, src) if IMAGE_ROOT else src
+    if not os.path.exists(path):
+        return html.escape(alt)
+    uri = _data_uri(path) if IMAGE_EMBED else src
+    return '<img class="ic" src="%s" alt="%s">' % (uri, html.escape(alt))
 
 
 def image_html(caption, src):
