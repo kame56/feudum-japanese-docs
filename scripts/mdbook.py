@@ -26,6 +26,39 @@ def inline(s):
     s = s.replace("\x00AST\x00", "*")
     return s
 
+_ADV = re.compile(
+    r'^\s*(?:!\[[^\]]*\]\((?P<img>[^)]+)\)\s*)?'
+    r'\*\*(?P<label>[^*]+?)\*\*\s*(?:（上級ゲーム）)?\s*(?:[—–-]\s*)?')
+
+
+def adv_head(md):
+    """上級能力の引用ブロックから、先頭の能力名とアイコンを見出しへ切り出す。
+
+    「**「遠い親戚」（"Distant Kin"）（上級ゲーム）** — 本文…」のような書き方を、
+    左上に能力名、その横に控えめな (上級) と原語、右にアイコン、という形にする。
+    戻り値は (見出しを取り除いた本文, 見出しHTML)。
+    """
+    m = _ADV.match(md)
+    if not m:
+        return md, ""
+    label = m.group("label").replace("（上級ゲーム）", "").strip()
+    en = ""
+    mm = re.search(r"（\s*[\"“]?(.+?)[\"”]?\s*）\s*$", label)
+    if mm:
+        en = mm.group(1).strip()
+        label = label[:mm.start()].strip()
+    name = label.strip("「」").strip()
+    if not name:
+        return md, ""
+    parts = ['<span class="adv-name">%s</span>' % html.escape(name),
+             '<span class="adv-tag">(上級)</span>']
+    if en:
+        parts.append('<span class="adv-en">%s</span>' % html.escape(en))
+    if m.group("img"):
+        parts.append(_inline_img("", m.group("img")).replace('class="ic"', 'class="adv-ic"'))
+    return md[m.end():], '<div class="adv-head">%s</div>' % "".join(parts)
+
+
 def slug(t):
     t = re.sub(r"<[^>]+>", "", t)
     t = re.sub(r"[*`]", "", t).strip().lower()
@@ -81,22 +114,23 @@ def convert(md, heading_shift=0, collect=None):
 
         # blockquote
         if ln.lstrip().startswith(">"):
+            # 空行は引用の終わり。段落を分けたいときは「>」だけの行を置く。
+            # （空行をまたいで continue すると、隣り合う別々の引用が1つに融合してしまう）
             buf = []
-            while i < len(lines) and (lines[i].lstrip().startswith(">") or
-                                      (lines[i].strip() == "" and
-                                       i + 1 < len(lines) and lines[i + 1].lstrip().startswith(">"))):
-                if lines[i].strip() == "":
-                    buf.append("")
-                else:
-                    buf.append(re.sub(r"^\s*>\s?", "", lines[i]))
+            while i < len(lines) and lines[i].lstrip().startswith(">"):
+                buf.append(re.sub(r"^\s*>\s?", "", lines[i]))
                 i += 1
-            inner = convert("\n".join(buf), heading_shift)
             cls = "callout"
             joined = "\n".join(buf)
+            head = ""
             if re.search(r"（上級ゲーム）|（Reeves）|上級ゲーム", joined):
                 cls = "callout adv"
-                # 見出しバッジで示すので本文中の「（上級ゲーム）」は削る
+                joined, head = adv_head(joined)
+            inner = convert(joined, heading_shift)
+            if cls == "callout adv":
+                # 見出しに出すので本文中の「（上級ゲーム）」は削る
                 inner = inner.replace("（上級ゲーム）", "")
+                inner = head + inner
             elif re.search(r"^\s*豆知識", joined):
                 cls = "callout trivia"
             elif re.search(r"\*\*注:|\*\*重要:|\*\*ヒント:|\*\*表に関する注:", joined):
@@ -162,7 +196,7 @@ def convert(md, heading_shift=0, collect=None):
             continue
 
         # 生HTMLブロック（行頭が < のブロック要素）
-        m = re.match(r"^<(div|section|figure|table|details|aside|svg|dl|blockquote|p|pre|ul|ol|h[1-6])\b", ln)
+        m = re.match(r"^<(div|section|nav|figure|table|details|aside|svg|dl|blockquote|p|pre|ul|ol|h[1-6])\b", ln)
         if m:
             tag = m.group(1)
             buf = [ln]; i += 1
@@ -302,12 +336,13 @@ tbody tr:nth-child(even) td{background:#fbf8f1}
 }
 .callout p{margin:.3em 0}
 .callout.adv{background:var(--adv);border-left-color:var(--gold)}
-.callout.adv::before{
-  content:"上級ゲーム"; display:inline-block; margin:0 0 .35em;
-  font-family:"Hiragino Sans","Yu Gothic",sans-serif; font-size:7.6pt;
-  letter-spacing:.12em; color:#fff; background:var(--gold);
-  padding:.12em .6em; border-radius:2px;
-}
+.adv-head{display:flex;align-items:center;gap:.5em;margin:0 0 .35em;flex-wrap:wrap}
+.adv-name{font-family:"Hiragino Sans","Yu Gothic",sans-serif;font-size:1.04em;
+  font-weight:700;color:var(--gold)}
+.adv-tag{font-family:"Hiragino Sans","Yu Gothic",sans-serif;font-size:.72em;color:var(--ink-soft)}
+.adv-en{font-family:"Hiragino Sans","Yu Gothic",sans-serif;font-size:.74em;
+  color:var(--ink-soft);font-style:italic}
+.adv-ic{margin-left:auto;height:9mm;width:auto;border:0;background:none}
 .callout.trivia{background:var(--trivia);border-left-color:#8fa07d;font-style:normal}
 .callout table{font-size:8.9pt}
 .callout .tablewrap{margin:.5em 0}
@@ -472,6 +507,20 @@ nav.toc a:hover{border-bottom:1px dotted #a99570}
 }
 .blk-steps>.cell strong{display:block;font-family:"Hiragino Sans",sans-serif;font-size:1.02em}
 .blk-steps>.cell p{margin:0}
+
+/* ---- アクションの目次リンク ---- */
+.actionnav{display:flex;flex-wrap:wrap;gap:.3em;margin:.7em 0 1.2em}
+.actionnav a{
+  display:inline-flex;align-items:center;gap:.35em;
+  padding:.15em .6em .15em .35em;border:1px solid var(--line-soft);border-radius:999px;
+  background:var(--parch);font-family:"Hiragino Sans",sans-serif;font-size:.8em;
+  color:var(--ink);text-decoration:none;
+}
+.an-n{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:1.25em;height:1.25em;border-radius:50%;background:var(--line-soft);
+  font-size:.78em;font-weight:700;color:var(--ink-soft);
+}
 
 /* ---- 行中の小さな画像（表のセルの記号など） ---- */
 img.ic{height:16pt;width:auto;vertical-align:-.35em;border:0;background:none;box-shadow:none}
