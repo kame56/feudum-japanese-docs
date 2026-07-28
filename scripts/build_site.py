@@ -23,6 +23,7 @@ OUT = os.path.join(ROOT, "dist", "site")
 
 mdbook.IMAGE_ROOT = ROOT
 mdbook.IMAGE_EMBED = False          # サイトでは外部ファイル参照にする
+mdbook.IMAGE_VERSION = True        # 画像URLに内容ハッシュを付ける（差し替えがキャッシュに残らないように）
 
 SITE_TITLE = "Feudum 日本語ドキュメント"
 

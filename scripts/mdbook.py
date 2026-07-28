@@ -6,7 +6,7 @@
 - css()          : 基本スタイルを返す。font_scale で全体の文字サイズを一括変更
 - document()     : <!doctype html> ごと組み立てる
 """
-import re, html, os
+import re, html, os, hashlib
 
 # ---------------- inline ----------------
 GOODS = {"食料": "food", "木材": "wood", "鉄": "iron", "硫黄": "sulfur", "硝石": "saltpeter"}
@@ -40,7 +40,7 @@ def adv_head(md):
     """
     m = _ADV.match(md)
     if not m:
-        return md, ""
+        return md, "", ""
     label = m.group("label").replace("（上級ゲーム）", "").strip()
     en = ""
     mm = re.search(r"（\s*[\"“]?(.+?)[\"”]?\s*）\s*$", label)
@@ -49,14 +49,15 @@ def adv_head(md):
         label = label[:mm.start()].strip()
     name = label.strip("「」").strip()
     if not name:
-        return md, ""
+        return md, "", ""
     parts = ['<span class="adv-name">%s</span>' % html.escape(name),
              '<span class="adv-tag">(上級)</span>']
     if en:
         parts.append('<span class="adv-en">%s</span>' % html.escape(en))
+    icon = ""
     if m.group("img"):
-        parts.append(_inline_img("", m.group("img")).replace('class="ic"', 'class="adv-ic"'))
-    return md[m.end():], '<div class="adv-head">%s</div>' % "".join(parts)
+        icon = _inline_img("", m.group("img")).replace('class="ic"', 'class="adv-ic"')
+    return md[m.end():], '<div class="adv-head">%s</div>' % "".join(parts), icon
 
 
 def slug(t):
@@ -122,14 +123,17 @@ def convert(md, heading_shift=0, collect=None):
                 i += 1
             cls = "callout"
             joined = "\n".join(buf)
-            head = ""
+            head = icon = ""
             if re.search(r"（上級ゲーム）|（Reeves）|上級ゲーム", joined):
                 cls = "callout adv"
-                joined, head = adv_head(joined)
+                joined, head, icon = adv_head(joined)
             inner = convert(joined, heading_shift)
             if cls == "callout adv":
                 # 見出しに出すので本文中の「（上級ゲーム）」は削る
                 inner = inner.replace("（上級ゲーム）", "")
+                if icon:
+                    inner = ('<div class="adv-body"><div class="adv-text">%s</div>%s</div>'
+                             % (inner, icon))
                 inner = head + inner
             elif re.search(r"^\s*豆知識", joined):
                 cls = "callout trivia"
@@ -342,7 +346,9 @@ tbody tr:nth-child(even) td{background:#fbf8f1}
 .adv-tag{font-family:"Hiragino Sans","Yu Gothic",sans-serif;font-size:.72em;color:var(--ink-soft)}
 .adv-en{font-family:"Hiragino Sans","Yu Gothic",sans-serif;font-size:.74em;
   color:var(--ink-soft);font-style:italic}
-.adv-ic{margin-left:auto;height:9mm;width:auto;border:0;background:none}
+.adv-body{display:flex;gap:3.5mm;align-items:flex-start}
+.adv-text{flex:1 1 auto;min-width:0}
+.adv-ic{flex:0 0 auto;width:auto;max-width:36mm;max-height:17mm;border:0;background:none}
 .callout.trivia{background:var(--trivia);border-left-color:#8fa07d;font-style:normal}
 .callout table{font-size:8.9pt}
 .callout .tablewrap{margin:.5em 0}
@@ -637,6 +643,7 @@ td img.ic{height:18pt}
 # ---------------- 画像 ----------------
 IMAGE_ROOT = ""          # ビルダーが設定する（プロジェクトルート）
 IMAGE_EMBED = True       # True なら base64 で埋め込む
+IMAGE_VERSION = False    # True なら画像URLに内容ハッシュを付ける（サイト用。キャッシュ対策）
 WEB_ONLY = True          # False なら ::: web-only ブロックを出力しない（A4版用）
 _IMG_CACHE = {}
 
@@ -655,12 +662,26 @@ def _data_uri(path):
     return _IMG_CACHE[path]
 
 
+_VER_CACHE = {}
+
+
+def img_src(src, path):
+    """外部参照のとき、内容が変わったら別URLになるよう版番号を付ける。"""
+    if not IMAGE_VERSION:
+        return src
+    key = os.path.abspath(path)
+    if key not in _VER_CACHE:
+        with open(path, "rb") as f:
+            _VER_CACHE[key] = hashlib.md5(f.read()).hexdigest()[:8]
+    return "%s?v=%s" % (src, _VER_CACHE[key])
+
+
 def _inline_img(alt, src):
     """行中に置く小さな画像。文字と同じ高さに合わせて表示する。"""
     path = os.path.join(IMAGE_ROOT, src) if IMAGE_ROOT else src
     if not os.path.exists(path):
         return html.escape(alt)
-    uri = _data_uri(path) if IMAGE_EMBED else src
+    uri = _data_uri(path) if IMAGE_EMBED else img_src(src, path)
     return '<img class="ic" src="%s" alt="%s">' % (uri, html.escape(alt))
 
 
@@ -681,7 +702,7 @@ def image_html(caption, src):
     path = os.path.join(IMAGE_ROOT, src) if IMAGE_ROOT else src
     cap = '<figcaption>%s</figcaption>' % inline(caption) if caption else ""
     if os.path.exists(path):
-        uri = _data_uri(path) if IMAGE_EMBED else src
+        uri = _data_uri(path) if IMAGE_EMBED else img_src(path=path, src=src)
         return ('<figure class="fig size-%s"><img src="%s" alt="%s">%s</figure>'
                 % (size, uri, html.escape(caption), cap))
     return ('<figure class="fig size-%s placeholder">'
