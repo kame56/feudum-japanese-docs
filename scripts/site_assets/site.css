@@ -312,9 +312,9 @@ tbody tr:hover td{background:color-mix(in srgb,var(--gold) 5%,transparent)}
 .actionnav a:hover .an-n{background:var(--gold);color:#fff}
 
 /* ---------- 行中の小さな画像（表のセルの記号など） ---------- */
-img.ic{height:22px;width:auto;vertical-align:-6px;border:0;border-radius:0;
+img.ic{width:30px;height:auto;vertical-align:middle;border:0;border-radius:0;
   background:none;box-shadow:none;max-width:none}
-td img.ic{height:26px}
+td img.ic{width:38px}
 
 /* ---------- サイトだけに出す補足（::: web-only） ---------- */
 .web-only p{

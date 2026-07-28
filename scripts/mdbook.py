@@ -529,8 +529,8 @@ nav.toc a:hover{border-bottom:1px dotted #a99570}
 }
 
 /* ---- 行中の小さな画像（表のセルの記号など） ---- */
-img.ic{height:16pt;width:auto;vertical-align:-.35em;border:0;background:none;box-shadow:none}
-td img.ic{height:18pt}
+img.ic{width:22pt;height:auto;vertical-align:middle;border:0;background:none;box-shadow:none}
+td img.ic{width:26pt}
 
 /* ---- components（::: comp）コンポーネント一覧 ---- */
 .blk-comp{display:grid;gap:.45em;grid-template-columns:repeat(4,1fr);margin:.9em 0 1.3em}
