@@ -85,7 +85,7 @@
 | `vessels-routes.jpg` | 7章 | 帆船・潜水艇・飛行機械の駒と、盤上の対応するルート記号 | wide ／ **暫定配置済み**（PDF由来: art-ship ほか4点） |
 | `monsters-2.jpg` | 8章 | ベヒモスとシーサーペント | half ／ **暫定配置済み**（PDF由来: art-monsters-2） |
 | `tracks-4.jpg` | 9章 | 得点・ギルド・軍役・大巡礼の4トラック。1枚の横長写真でも、4枚を並べた図でも可 | full |
-| `card-symbols.jpg` | 11章 | カード上の記号の拡大 | wide ／ **配置済み**（Dized素材: 4種。vp記号のみ未確認） |
+| `card-symbols.jpg` | 11章 | カード上の記号の拡大 | wide ／ **配置済み**（Dized素材: 4種）。vp 記号は `sym-vp.png`（カード左上の月桂冠。`icons/icon-vp-2.png` と同一素材） |
 
 ## D. はじめてガイド用
 
@@ -117,7 +117,7 @@
 | `fig-roles.jpg` | 支配者・農奴・臣民 | → `roles-placement.jpg` |
 | `fig-locations.jpg` | 拠点4種 | → `locations-4.jpg` |
 | `fig-tilechart.jpg` | 地域タイル表 | → `chart-region-tile.jpg`（コンポーネント図から切り出し、数値判読済み） |
-| `fig-military.jpg` | 軍役トラックの投石機スペース | → `military-track.jpg`（実写）。ただし**印字値はディスクに隠れており未確認** |
+| `fig-military.jpg` | 軍役トラックの投石機スペース | → `military-track.jpg`（実写。ディスクの置き方が分かる）＋ `military-track-values.jpg`（ディスクの載っていない盤面画像。**印字値 −3／−4／−5 を判読済み**） |
 | `fig-landscapes.jpg` | 地形4種 | → `landscapes-4.jpg` |
 | `fig-conquer.jpg` | 征服の例 | そのままで可 |
 | `fig-defend.jpg` | 防御の例 | そのままで可 |
